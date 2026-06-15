@@ -45,6 +45,8 @@ export default function () {
 }
 
 function parseAutoImportPaths(script) {
+	// NOTE: Need to keep a track of
+
 	// STEP: Identify each statement in the script.
 	// STEP: Extract path from each statement.
 	// STEP: Tidy each path.
@@ -53,6 +55,10 @@ function parseAutoImportPaths(script) {
 
 function generateImportStatements(srcFile, autoImportPaths) {
 	return (
+		// TODO: Modify listImportableFiles so it handles a
+		//       single auto import path. Each set of import
+		//       statements will replace its '$autoImport(...)'
+		//       within the source file.
 		listImportableFiles(srcFile, autoImportPaths)
 			// Must be a Svelte file.
 			.filter((fi) => fi.extension === 'svelte')
