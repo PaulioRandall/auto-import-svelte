@@ -28,7 +28,7 @@ export default function () {
 			const usedComponentNames = usedComponentNameLists[srcFile]
 			delete usedComponentNameLists[srcFile]
 
-			const autoImportPaths = parseAutoImportPaths(script)
+			const autoImportPaths = parseAutoImportPaths(content)
 
 			const importStatements = generateImportStatements(
 				srcFile, //
@@ -44,9 +44,7 @@ export default function () {
 	}
 }
 
-function parseAutoImportPaths(script) {
-	// NOTE: Need to keep a track of
-
+function parseAutoImportPaths(src) {
 	// STEP: Identify each statement in the script.
 	// STEP: Extract path from each statement.
 	// STEP: Tidy each path.

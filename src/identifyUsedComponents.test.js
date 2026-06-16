@@ -4,14 +4,16 @@ import identifyUsedComponents from './identifyUsedComponents.js'
 const POSIX = path.posix
 
 const html = `
-	<GridColumn>
-		<GridCell />
-		<GridCell />
-	</GridColumn>
+	<div>
+		<Grid>
+			<GridCell />
+			<GridCell />
+		</Grid>
+	</div>
 `
 
 test('identifyUsedComponents', () => {
-	const filename = POSIX.resolve('./testdata/Grid.svelte')
+	const filename = POSIX.resolve('./src/testdata/Grid.svelte')
 	const components = identifyUsedComponents(html)
-	expect(components).toEqual(['GridColumn', 'GridCell'])
+	expect(components).toEqual(['Grid', 'GridCell'])
 })
