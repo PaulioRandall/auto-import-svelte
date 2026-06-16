@@ -12,8 +12,10 @@ const html = `
 	</div>
 `
 
-test('identifyUsedComponents', () => {
-	const filename = POSIX.resolve('./src/testdata/Grid.svelte')
-	const components = identifyUsedComponents(html)
-	expect(components).toEqual(['Grid', 'GridCell'])
+describe('identifyUsedComponents.js', () => {
+	test('Identifies correct components', () => {
+		const filename = POSIX.resolve('./src/testdata/Grid.svelte')
+		const components = identifyUsedComponents(html)
+		expect(components).toEqual(['Grid', 'GridCell'])
+	})
 })

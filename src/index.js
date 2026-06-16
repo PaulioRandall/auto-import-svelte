@@ -3,61 +3,77 @@ import fs from 'fs'
 
 import identifyUsedComponents from './identifyUsedComponents.js'
 import listImportableFiles from './listImportableFiles.js'
+import findAutoImportPaths from './findAutoImportPaths.js'
 
 const POSIX = path.posix
 
 export default function () {
 	// This object is populated by the markup preprocesssor
 	// then used by the script preprocessor.
-	const usedComponentNameLists = {
+	const componentLists = {
 		// [filename]: [...componentNames],
 	}
 
 	return {
 		name: 'Auto Import',
+
+		// First, we must find and store the components actually
+		// used in the HTML.
 		markup: ({ content, filename }) => {
 			const srcFile = POSIX.resolve(filename)
-			const tags = identifyUsedComponents(content)
-
-			// Add to data object for use in the script function.
-			usedComponentNameLists[srcFile] = tags
+			componentLists[srcFile] = identifyUsedComponents(content)
 		},
+
+		// Second, we must find the $autoImport statements
+		// within the JS and replace them with real import
+		// statements for those used components.
 		script: ({ content, filename }) => {
 			const srcFile = POSIX.resolve(filename)
+			const components = componentLists[srcFile]
 
-			const usedComponentNames = usedComponentNameLists[srcFile]
-			delete usedComponentNameLists[srcFile]
+			// Clean up, no need to keep the entry.
+			delete componentLists[srcFile]
 
-			const autoImportPaths = parseAutoImportPaths(content)
-
-			const importStatements = generateImportStatements(
+			content = parseAndReplace(
 				srcFile, //
-				autoImportPaths
+				content,
+				components
 			)
 
-			if (importStatements) {
-				return {
-					code: importStatements + '\n' + content,
-				}
-			}
+			return { code: content }
 		},
 	}
 }
 
-function parseAutoImportPaths(src) {
-	// STEP: Identify each statement in the script.
-	// STEP: Extract path from each statement.
-	// STEP: Tidy each path.
-	return []
+function parseAndReplace(srcFile, src, components) {
+	const lines = src.split('\n')
+	const autoImports = findAutoImportPaths(lines)
+
+	// Start from the back so lines indexes stay aligned,
+	// i.e. so changes to the back of the line list won't
+	// affect line indexes before them.
+	autoImports.reverse()
+
+	for (const { lineIndex, path } of autoImports) {
+		// Identify importable componenets from path.
+		importables = listImportableComponents(srcFile, path, components)
+
+		// Generate import statements for components.
+		// Initial space indent for easse of reading when
+		// debugging.
+		statements = importables.map((im) => '  ' + im.importStatement)
+
+		// Replace whole $autoImport line with import
+		// statements.
+		lines.splice(lineIndex, 1, ...statements)
+	}
+
+	return lines.join('\n')
 }
 
-function generateImportStatements(srcFile, autoImportPaths) {
+function listImportableComponents(srcFile, autoImportPath, components) {
 	return (
-		// TODO: Modify listImportableFiles so it handles a
-		//       single auto import path. Each set of import
-		//       statements will replace its '$autoImport(...)'
-		//       within the source file.
-		listImportableFiles(srcFile, autoImportPaths)
+		listImportableFiles(srcFile, autoImportPath)
 			// Must be a Svelte file.
 			.filter((fi) => fi.extension === 'svelte')
 
@@ -68,12 +84,6 @@ function generateImportStatements(srcFile, autoImportPaths) {
 			.filter((fi) => /^[A-Z][A-Za-z0-9_]*$/.test(fi.name))
 
 			// Exclude those not used in the markup.
-			.filter((fi) => usedComponentNames.includes(fi.name))
-
-			// We just need the import statement.
-			.map((c) => c.importStatement)
-
-			// Join all statements into a multiline code chunk.
-			.join(';\n') + ';\n'
+			.filter((fi) => components.includes(fi.name))
 	)
 }

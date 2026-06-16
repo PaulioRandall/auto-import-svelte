@@ -9,10 +9,10 @@ const POSIX = path.posix
 
 // The Svelte file being preprocessed.
 
-describe('listImportableFiles', () => {
+describe('listImportableFiles.js', () => {
 	test('Auto import same directory', () => {
 		const srcFile = './src/testdata/Grid.svelte'
-		const components = listImportableFiles(srcFile, ['.'])
+		const components = listImportableFiles(srcFile, '.')
 
 		const absFilePaths = components.map((c) => c.absPath)
 		unorderedEquals(absFilePaths, [
@@ -35,18 +35,18 @@ describe('listImportableFiles', () => {
 
 	test('Auto import from another directory', () => {
 		const srcFile = './src/testdata/Grid.svelte'
-		const components = listImportableFiles(srcFile, ['./subdir'])
+		const components = listImportableFiles(srcFile, './subdir')
 
 		const absFilePaths = components.map((c) => c.absPath)
 		unorderedEquals(absFilePaths, [
-			POSIX.resolve('./src/testdata/subdir/GridBorder.svelte'),
-			POSIX.resolve('./src/testdata/subdir/GridContent.svelte'),
+			POSIX.resolve('./src/testdata/subdir/GridCellBorder.svelte'),
+			POSIX.resolve('./src/testdata/subdir/GridCellContent.svelte'),
 		])
 
 		const relFilePaths = components.map((c) => c.relPath)
 		unorderedEquals(relFilePaths, [
-			'./subdir/GridBorder.svelte',
-			'./subdir/GridContent.svelte',
+			'./subdir/GridCellBorder.svelte',
+			'./subdir/GridCellContent.svelte',
 		])
 	})
 })

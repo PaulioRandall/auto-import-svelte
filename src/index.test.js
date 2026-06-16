@@ -1,48 +1,52 @@
 import path from 'path'
+import preprocessor from './index.js'
 
 const POSIX = path.posix
 
-test(`TODO`, () => {})
+function joinLines(...lines) {
+	return lines.join('\n')
+}
 
-/*
-describe('auto-import', () => {
+describe('index.js', () => {
+	test('index', () => {
+		const filename = POSIX.resolve('./src/testdata/Grid.svelte')
+		const pp = preprocessor()
 
-
-	describe('_resolveImportDirs', () => {
-		const filename = POSIX.resolve('./src/routes/+page.svelte')
-
-		test(`component's own dir`, () => {
-			const searchDirs = _resolveImportDirs(
-				filename, //
-				['.']
-			)
-
-			expect(searchDirs).toEqual([
-				POSIX.resolve('./src/routes'), //
-			])
+		pp.markup({
+			filename,
+			content: joinLines(
+				`<GridColumn>`,
+				`	<GridCell>`,
+				`		<GridCellContent />`,
+				`	</GridCell>`,
+				`	<GridCell>`,
+				`		<GridCellContent />`,
+				`	</GridCell>`,
+				`	<GridCell>`,
+				`		<GridCellContent />`,
+				`	</GridCell>`,
+				`</GridColumn>`
+			),
 		})
 
-		test(`relative to component's own dir`, () => {
-			const searchDirs = _resolveImportDirs(
-				filename, //
-				['../lib']
-			)
-
-			expect(searchDirs).toEqual([
-				POSIX.resolve('./src/lib'), //
-			])
+		const { code } = pp.script({
+			filename,
+			content: joinLines(
+				`	$autoImport('.')`, //
+				``,
+				`	$autoImport('./subdir')`
+			),
 		})
 
-		test(`absolute dir`, () => {
-			const searchDirs = _resolveImportDirs(
-				filename, //
-				['/home/username/local_library']
-			)
+		// Ordered first by auto import path then alphabetical
+		// by name.
+		const exp = joinLines(
+			`  import GridCell from "./GridCell.svelte";`, //
+			`  import GridColumn from "./GridColumn.svelte";`,
+			``,
+			`  import GridCellContent from "./subdir/GridCellContent.svelte";`
+		)
 
-			expect(searchDirs).toEqual([
-				POSIX.resolve(`/home/username/local_library`),
-			])
-		})
+		expect(code).toEqual(exp)
 	})
 })
-*/

@@ -5,6 +5,7 @@ const POSIX = path.posix
 
 class FileImport {
 	_absPath = ''
+	_relPath = ''
 
 	constructor(absPath, relPath) {
 		this._absPath = absPath
@@ -32,21 +33,15 @@ class FileImport {
 		return ext.replace('.', '')
 	}
 
-	get importStatment() {
-		return `\timport ${this.name} from "./${this.relPath}"`
+	get importStatement() {
+		return `import ${this.name} from "${this.relPath}";`
 	}
 }
 
-export default function (srcFile, autoImportPaths) {
+export default function (srcFile, importPath) {
 	srcFile = POSIX.resolve(srcFile)
-	const results = []
-
-	for (const aip of autoImportPaths) {
-		const importDir = resolveImportDir(srcFile, aip)
-		results.push(...listFilesInDir(srcFile, importDir))
-	}
-
-	return results
+	const importDir = resolveImportDir(srcFile, importPath)
+	return listFilesInDir(srcFile, importDir)
 }
 
 // Currently relative only imports.
