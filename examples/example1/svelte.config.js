@@ -1,5 +1,5 @@
-import autoImport from './src/lib/index.js'
+import svelteAutoImport from 'svelte-auto-import'
 
 export default {
-	preprocess: [autoImport()],
+	preprocess: [svelteAutoImport()],
 }
