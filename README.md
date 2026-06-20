@@ -8,8 +8,11 @@
 	// Glob import.
 	$autoImportGlob('../shared/**/*')
 
-	// Direcotry and Glob imports support `$lib` prefix.
+	// Auto imports support SvelteKit `$lib` alias.
 	$autoImportDir('$lib/charts')
+
+	// Auto imports support `$root` alias.
+	$autoImportDir('$root/src')
 </script>
 ```
 
@@ -48,7 +51,7 @@ export default {
 
 **Parent Component**
 
-Auto import paths are relative to the components parent directory or `$lib` (`./src/lib`):
+Auto import paths are relative to the components parent directory, `$lib` (`./src/lib`), or `$root` (project root):
 
 ```svelte
 <script>
@@ -65,6 +68,9 @@ Auto import paths are relative to the components parent directory or `$lib` (`./
 	//
 	// See https://www.npmjs.com/package/glob for more info.
 	$autoImportGlob("$lib/**/*")
+
+	// Will import components from `{project-root}/src/shared`.
+	$autoImportDir("$root/src/shared")
 </script>
 
 <SameDirectoryComponent />

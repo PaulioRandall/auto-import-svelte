@@ -38,7 +38,13 @@ function findAutoImport(line, lineIndex, regex, isGlob) {
 		path = '.' + path.slice(libAlias.length)
 	}
 
-	return { isGlob, isLib, path, lineIndex }
+	const rootAlias = '$root'
+	const isRoot = path.startsWith(rootAlias)
+	if (isRoot) {
+		path = '.' + path.slice(rootAlias.length)
+	}
+
+	return { isGlob, isLib, isRoot, path, lineIndex }
 }
 
 function findImportPath(line, regex) {

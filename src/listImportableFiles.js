@@ -57,6 +57,9 @@ function resolveImportPath(srcFile, autoImport) {
 	if (autoImport.isLib) {
 		const libDir = POSIX.resolve('./src/lib')
 		return POSIX.join(libDir, path)
+	} else if (autoImport.isRoot) {
+		const rootDir = POSIX.resolve('.')
+		return POSIX.join(rootDir, path)
 	} else {
 		const currDir = POSIX.dirname(srcFile)
 		return POSIX.join(currDir, path)

@@ -13,6 +13,7 @@ describe('parseAutoImports.js', () => {
 			{
 				isGlob: false, //
 				isLib: false,
+				isRoot: false,
 				lineIndex: 0,
 				path: '.',
 			},
@@ -27,6 +28,7 @@ describe('parseAutoImports.js', () => {
 			{
 				isGlob: false, //
 				isLib: false,
+				isRoot: false,
 				lineIndex: 0,
 				path: './sub',
 			},
@@ -46,12 +48,14 @@ describe('parseAutoImports.js', () => {
 			{
 				isGlob: false, //
 				isLib: false,
+				isRoot: false,
 				lineIndex: 2,
 				path: '.',
 			},
 			{
 				isGlob: false, //
 				isLib: false,
+				isRoot: false,
 				lineIndex: 3,
 				path: './sub',
 			},
@@ -75,8 +79,43 @@ describe('parseAutoImports.js', () => {
 			{
 				isGlob: true, //
 				isLib: false,
+				isRoot: false,
 				lineIndex: 2,
 				path: './**/*',
+			},
+		])
+	})
+
+	test('Returns all import paths ($lib)', () => {
+		const lines = toLines(`$autoImportDir("$lib")')
+`)
+
+		const autoImports = findAutoImportPaths(lines)
+
+		expect(autoImports).toEqual([
+			{
+				isGlob: false, //
+				isLib: true,
+				isRoot: false,
+				lineIndex: 0,
+				path: '.',
+			},
+		])
+	})
+
+	test('Returns all import paths ($root)', () => {
+		const lines = toLines(`$autoImportDir("$root/src")')
+`)
+
+		const autoImports = findAutoImportPaths(lines)
+
+		expect(autoImports).toEqual([
+			{
+				isGlob: false, //
+				isLib: false,
+				isRoot: true,
+				lineIndex: 0,
+				path: './src',
 			},
 		])
 	})
