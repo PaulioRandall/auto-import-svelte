@@ -12,6 +12,7 @@ describe('listImportableFiles.js', () => {
 		const srcFile = './src/testdata/Grid.svelte'
 		const components = listImportableFiles(srcFile, {
 			path: '.', //
+			isLib: false,
 			isGlob: false,
 		})
 
@@ -38,6 +39,7 @@ describe('listImportableFiles.js', () => {
 		const srcFile = './src/testdata/Grid.svelte'
 		const components = listImportableFiles(srcFile, {
 			path: './subdir', //
+			isLib: false,
 			isGlob: false,
 		})
 
@@ -58,6 +60,7 @@ describe('listImportableFiles.js', () => {
 		const srcFile = './src/testdata/Grid.svelte'
 		const components = listImportableFiles(srcFile, {
 			path: './**/*', //
+			isLib: false,
 			isGlob: true,
 		})
 
@@ -81,6 +84,27 @@ describe('listImportableFiles.js', () => {
 			'./NotSvelteFile.txt',
 			'./subdir/GridCellBorder.svelte',
 			'./subdir/GridCellContent.svelte',
+		])
+	})
+
+	test('Auto import from lib', () => {
+		const srcFile = './src/testdata/Grid.svelte'
+		const components = listImportableFiles(srcFile, {
+			path: '.', //
+			isLib: true,
+			isGlob: false,
+		})
+
+		const absFilePaths = components.map((c) => c.absPath)
+		unorderedEquals(absFilePaths, [
+			POSIX.resolve('./src/lib/LibAlpha.svelte'),
+			POSIX.resolve('./src/lib/LibBeta.svelte'),
+		])
+
+		const relFilePaths = components.map((c) => c.relPath)
+		unorderedEquals(relFilePaths, [
+			'./../lib/LibAlpha.svelte',
+			'./../lib/LibBeta.svelte',
 		])
 	})
 })

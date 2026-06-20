@@ -7,6 +7,9 @@
 
 	// Glob import.
 	$autoImportGlob('../shared/**/*')
+
+	// Direcotry and Glob imports support `$lib` prefix.
+	$autoImportDir('$lib/charts')
 </script>
 ```
 
@@ -21,8 +24,6 @@ Very simple and lazy implementation:
 - It won't check if a component is already imported.
 - It doesn't work for library imports or absolute paths.
 - Auto import statements must be on a single line and the path must be a single or double quoted string literal.
-
-> I may create a more robust implementation if I ever get bored.
 
 ## Good Usage
 
@@ -47,7 +48,7 @@ export default {
 
 **Parent Component**
 
-Auto import paths are be relative to the components parent directory:
+Auto import paths are relative to the components parent directory or `$lib` (`./src/lib`):
 
 ```svelte
 <script>
@@ -60,22 +61,22 @@ Auto import paths are be relative to the components parent directory:
 	// Will import SiblingDirectoryComponent.
 	$autoImportDir('../sibling-directory')
 
-	// Will import both SameDirectoryComponent and
-	// SubDirectoryComponent.
+	// Will import all components from `$lib`.
 	//
 	// See https://www.npmjs.com/package/glob for more info.
-	$autoImportGlob("./**/*")
+	$autoImportGlob("$lib/**/*")
 </script>
 
 <SameDirectoryComponent />
 <SubDirectoryComponent />
 <SiblingDirectoryComponent />
+<LibSubDirectoryComponent />
 ```
 
 ## Bad Usage
 
 Existing imports for auto import paths must be removed
-or you'll get a naming conflict on compile:
+or face a naming conflict on compile:
 
 ```svelte
 <script>
@@ -100,7 +101,7 @@ you can't do this:
 </script>
 ```
 
-The whole statement must be on a single line, never
+The whole auto import statement must be on a single line, never
 multiline:
 
 ```svelte

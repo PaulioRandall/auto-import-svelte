@@ -12,6 +12,7 @@ describe('parseAutoImports.js', () => {
 		expect(autoImports).toEqual([
 			{
 				isGlob: false, //
+				isLib: false,
 				lineIndex: 0,
 				path: '.',
 			},
@@ -25,6 +26,7 @@ describe('parseAutoImports.js', () => {
 		expect(autoImports).toEqual([
 			{
 				isGlob: false, //
+				isLib: false,
 				lineIndex: 0,
 				path: './sub',
 			},
@@ -43,11 +45,13 @@ describe('parseAutoImports.js', () => {
 		expect(autoImports).toEqual([
 			{
 				isGlob: false, //
+				isLib: false,
 				lineIndex: 2,
 				path: '.',
 			},
 			{
 				isGlob: false, //
+				isLib: false,
 				lineIndex: 3,
 				path: './sub',
 			},
@@ -70,6 +74,7 @@ describe('parseAutoImports.js', () => {
 		expect(autoImports).toEqual([
 			{
 				isGlob: true, //
+				isLib: false,
 				lineIndex: 2,
 				path: './**/*',
 			},

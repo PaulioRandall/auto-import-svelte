@@ -41,7 +41,7 @@ class FileImport {
 
 export default function (srcFile, autoImport) {
 	srcFile = POSIX.resolve(srcFile)
-	const absPath = resolveImportPath(srcFile, autoImport.path)
+	const absPath = resolveImportPath(srcFile, autoImport)
 
 	if (autoImport.isGlob) {
 		return listGlobFiles(srcFile, absPath)
@@ -50,10 +50,17 @@ export default function (srcFile, autoImport) {
 	return listFilesInDir(srcFile, absPath)
 }
 
-// Currently relative only imports.
-function resolveImportPath(srcFile, relPath) {
-	const currDir = POSIX.dirname(srcFile)
-	return POSIX.join(currDir, relPath)
+function resolveImportPath(srcFile, autoImport) {
+	// Relative and $lib imports only.
+	const path = autoImport.path
+
+	if (autoImport.isLib) {
+		const libDir = POSIX.resolve('./src/lib')
+		return POSIX.join(libDir, path)
+	} else {
+		const currDir = POSIX.dirname(srcFile)
+		return POSIX.join(currDir, path)
+	}
 }
 
 function listFilesInDir(srcFile, importDir) {
@@ -75,7 +82,7 @@ function listGlobFiles(srcFile, glob) {
 }
 
 function noSuchDirError(dir) {
-	throw err(
+	throw new Error(
 		`[Svelte-Auto-Import] Dir '${dir}' does not exist or presented by the file system as such.`
 	)
 }

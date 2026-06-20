@@ -88,4 +88,30 @@ describe('index.js', () => {
 
 		expect(code).toEqual(exp)
 	})
+
+	test('index (lib)', () => {
+		const filename = POSIX.resolve('./src/testdata/Grid.svelte')
+		const pp = preprocessor()
+
+		pp.markup({
+			filename,
+			content: joinLines(`<LibAlpha>`, `	<LibBeta />`, `</LibAlpha>`),
+		})
+
+		const { code } = pp.script({
+			filename,
+			content: joinLines(
+				`	$autoImportDir('$lib')` //
+			),
+		})
+
+		// Ordered first by auto import path then alphabetical
+		// by name.
+		const exp = joinLines(
+			`  import LibAlpha from "./../lib/LibAlpha.svelte";`,
+			`  import LibBeta from "./../lib/LibBeta.svelte";`
+		)
+
+		expect(code).toEqual(exp)
+	})
 })

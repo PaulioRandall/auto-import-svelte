@@ -25,13 +25,20 @@ export default function (lines) {
 
 function findAutoImport(line, lineIndex, regex, isGlob) {
 	regex.lastIndex = 0
-	const path = findImportPath(line, regex)
+
+	let path = findImportPath(line, regex)
 
 	if (!path) {
 		return null
 	}
 
-	return { isGlob, path, lineIndex }
+	const libAlias = '$lib'
+	const isLib = path.startsWith(libAlias)
+	if (isLib) {
+		path = '.' + path.slice(libAlias.length)
+	}
+
+	return { isGlob, isLib, path, lineIndex }
 }
 
 function findImportPath(line, regex) {
