@@ -1,14 +1,30 @@
 # Svelte Auto-Import
 
+```svelte
+<script>
+	// Specific directory import.
+	$autoImportDir('.')
+
+	// Glob import.
+	$autoImportGlob('../shared/**/*')
+</script>
+```
+
 Simple Svelte preprocessor for auto importing sets of
-components. Inspired by The Go Programming Language package rules and intended for rapid prototyping, not so much for
-production quality systems.
+components. Inspired by languages such as [Go](https://go.dev/) where packaged scoped values are referencable across files without importing. I've expanded to allow importing of Svelte components from specific folders and via Glob.
 
-Very simple implementation:
+This library is a scaffolding tool to minimise boiler plate as a source of programming friction during development activities. `$autoImport` statements can be replaced with explicit imports towards the end of development.
 
+Very simple and lazy implementation:
+
+- It will only import components used within the HTML section of the Svelte component; it won't import dynamically instantiated components.
 - It won't check if a component is already imported.
 - It doesn't work for library imports or absolute paths.
-- `$autoImport(...)` can't have multiline arguments.
+- Auto import statements must be on a single line and the path must be a single or double quoted string literal.
+
+> I may create a more robust implementation if I ever get bored.
+
+## Good Usage
 
 **package.json**
 
@@ -17,8 +33,6 @@ Very simple implementation:
 	"@PaulioRandall/svelte-auto-import": "x.y.z"
 }
 ```
-
-## Good Usage
 
 **svelte.config.js**
 
@@ -33,18 +47,24 @@ export default {
 
 **Parent Component**
 
-Specify the auto import path with `$autoImport(...)` where `...` is the relative path to the directory containing components you want auto imported:
+Auto import paths are be relative to the components parent directory:
 
 ```svelte
 <script>
 	// Will import SameDirectoryComponent.
-	$autoImport('.')
+	$autoImportDir('.')
 
 	// Will import SubDirectoryComponent.
-	$autoImport('./sub-directory')
+	$autoImportDir('./sub-directory')
 
 	// Will import SiblingDirectoryComponent.
-	$autoImport('../sibling-directory')
+	$autoImportDir('../sibling-directory')
+
+	// Will import both SameDirectoryComponent and
+	// SubDirectoryComponent.
+	//
+	// See https://www.npmjs.com/package/glob for more info.
+	$autoImportGlob("./**/*")
 </script>
 
 <SameDirectoryComponent />
@@ -63,10 +83,8 @@ or you'll get a naming conflict on compile:
 
 	// Will create a duplicate and conflicting import for
 	// Component.
-	$autoImport('.')
+	$autoImportDir('.')
 </script>
-
-<Component />
 ```
 
 It doesn't work for library imports or absolute paths, so
@@ -75,14 +93,11 @@ you can't do this:
 ```svelte
 <script>
 	// Library import.
-	$autoImport('flowbite-svelte')
+	$autoImportDir('flowbite-svelte')
 
 	// Absolute path.
-	$autoImport('/absolute/path/to/dir')
+	$autoImportDir('/absolute/path/to/dir')
 </script>
-
-<Alert>Flowbite alert message.</Alert>
-<AbsolutelyImportedComponent />
 ```
 
 The whole statement must be on a single line, never
@@ -90,10 +105,8 @@ multiline:
 
 ```svelte
 <script>
-	$autoImport(
+	$autoImportDir(
 		'.',
 	)
 </script>
-
-<YourAutoImportedComponent />
 ```
