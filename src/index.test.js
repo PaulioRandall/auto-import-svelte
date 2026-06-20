@@ -32,9 +32,9 @@ describe('index.js', () => {
 		const { code } = pp.script({
 			filename,
 			content: joinLines(
-				`	$autoImport('.')`, //
+				`	$autoImportDir('.')`, //
 				``,
-				`	$autoImport('./subdir')`
+				`	$autoImportDir('./subdir')`
 			),
 		})
 

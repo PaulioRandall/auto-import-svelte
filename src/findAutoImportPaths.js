@@ -2,7 +2,7 @@ const WHITESPACE = '[\\r\\t\\f\\v ]*'
 const PATH = '["\'`](?<path>.*?)["\'`]'
 
 const dirRegex = new RegExp(
-	`${WHITESPACE}\\$autoImport\\(${PATH}\\);?${WHITESPACE}`
+	`${WHITESPACE}\\$autoImportDir\\(${PATH}\\);?${WHITESPACE}`
 )
 
 const globRegex = new RegExp(

@@ -6,7 +6,7 @@ function toLines(s) {
 
 describe('parseAutoImports.js', () => {
 	test('Same directory', () => {
-		const lines = toLines(`$autoImport(".")`)
+		const lines = toLines(`$autoImportDir(".")`)
 		const autoImports = findAutoImportPaths(lines)
 
 		expect(autoImports).toEqual([
@@ -19,7 +19,7 @@ describe('parseAutoImports.js', () => {
 	})
 
 	test('Sub directory', () => {
-		const lines = toLines(`$autoImport("./sub")`)
+		const lines = toLines(`$autoImportDir("./sub")`)
 		const autoImports = findAutoImportPaths(lines)
 
 		expect(autoImports).toEqual([
@@ -34,8 +34,8 @@ describe('parseAutoImports.js', () => {
 	test('Returns all import paths', () => {
 		const lines = toLines(`
 	import abc from './abc.js'
-	$autoImport(".")
-	$autoImport("./sub")
+	$autoImportDir(".")
+	$autoImportDir("./sub")
 `)
 
 		const autoImports = findAutoImportPaths(lines)
