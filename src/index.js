@@ -54,9 +54,9 @@ function parseAndReplace(srcFile, src, components) {
 	// affect line indexes before them.
 	autoImports.reverse()
 
-	for (const { lineIndex, path } of autoImports) {
+	for (const autoImport of autoImports) {
 		// Identify importable componenets from path.
-		importables = listImportableComponents(srcFile, path, components)
+		importables = listImportableComponents(srcFile, autoImport, components)
 
 		// Generate import statements for components.
 		// Initial space indent for easse of reading when
@@ -65,7 +65,7 @@ function parseAndReplace(srcFile, src, components) {
 
 		// Replace whole $autoImport line with import
 		// statements.
-		lines.splice(lineIndex, 1, ...statements)
+		lines.splice(autoImport.lineIndex, 1, ...statements)
 	}
 
 	return lines.join('\n')

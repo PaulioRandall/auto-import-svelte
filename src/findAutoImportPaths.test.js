@@ -10,7 +10,11 @@ describe('parseAutoImports.js', () => {
 		const autoImports = findAutoImportPaths(lines)
 
 		expect(autoImports).toEqual([
-			{ lineIndex: 0, path: '.' }, //
+			{
+				isGlob: false, //
+				lineIndex: 0,
+				path: '.',
+			},
 		])
 	})
 
@@ -19,7 +23,11 @@ describe('parseAutoImports.js', () => {
 		const autoImports = findAutoImportPaths(lines)
 
 		expect(autoImports).toEqual([
-			{ lineIndex: 0, path: './sub' }, //
+			{
+				isGlob: false, //
+				lineIndex: 0,
+				path: './sub',
+			},
 		])
 	})
 
@@ -33,13 +41,38 @@ describe('parseAutoImports.js', () => {
 		const autoImports = findAutoImportPaths(lines)
 
 		expect(autoImports).toEqual([
-			{ lineIndex: 2, path: '.' }, //
-			{ lineIndex: 3, path: './sub' }, //
+			{
+				isGlob: false, //
+				lineIndex: 2,
+				path: '.',
+			},
+			{
+				isGlob: false, //
+				lineIndex: 3,
+				path: './sub',
+			},
 		])
 	})
 
 	test('Returns empty array when no auto import statements', () => {
 		const autoImports = findAutoImportPaths(`import abc from './abc.js'`)
 		expect(autoImports).toEqual([])
+	})
+
+	test('Returns all import paths (GLOB)', () => {
+		const lines = toLines(`
+	import abc from './abc.js'
+	$autoImportGlob("./**/*")
+`)
+
+		const autoImports = findAutoImportPaths(lines)
+
+		expect(autoImports).toEqual([
+			{
+				isGlob: true, //
+				lineIndex: 2,
+				path: './**/*',
+			},
+		])
 	})
 })

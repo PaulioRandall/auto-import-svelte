@@ -1,0 +1,3 @@
+<p>
+	Alpha component. 
+</p>

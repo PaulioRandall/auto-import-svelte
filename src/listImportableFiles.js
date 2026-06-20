@@ -1,4 +1,5 @@
 import fs from 'fs'
+import { globSync } from 'glob'
 import path from 'path'
 
 const POSIX = path.posix
@@ -38,18 +39,21 @@ class FileImport {
 	}
 }
 
-export default function (srcFile, importPath) {
+export default function (srcFile, autoImport) {
 	srcFile = POSIX.resolve(srcFile)
-	const importDir = resolveImportDir(srcFile, importPath)
-	return listFilesInDir(srcFile, importDir)
+	const absPath = resolveImportPath(srcFile, autoImport.path)
+
+	if (autoImport.isGlob) {
+		return listGlobFiles(srcFile, absPath)
+	}
+
+	return listFilesInDir(srcFile, absPath)
 }
 
 // Currently relative only imports.
-function resolveImportDir(srcFile, aip) {
+function resolveImportPath(srcFile, relPath) {
 	const currDir = POSIX.dirname(srcFile)
-	const importDir = POSIX.join(currDir, aip)
-	const absPath = POSIX.resolve(importDir)
-	return POSIX.normalize(absPath)
+	return POSIX.join(currDir, relPath)
 }
 
 function listFilesInDir(srcFile, importDir) {
@@ -60,6 +64,14 @@ function listFilesInDir(srcFile, importDir) {
 	return fs
 		.readdirSync(importDir) //
 		.map((f) => toFileImport(srcFile, importDir, f))
+}
+
+function listGlobFiles(srcFile, glob) {
+	return globSync(glob, {
+		posix: true, //
+		nodir: true,
+	}) //
+		.map((f) => toGlobbedFileImport(srcFile, f))
 }
 
 function noSuchDirError(dir) {
@@ -83,4 +95,17 @@ function createRelPath(srcFile, absPath) {
 	const srcDir = POSIX.dirname(srcFile)
 	const relPath = POSIX.relative(srcDir, absPath)
 	return './' + POSIX.normalize(relPath)
+}
+
+function toGlobbedFileImport(srcFile, absPath) {
+	// E.g. `//?/C:`
+	const winPrefix = /^\/\/\?\/[A-Z]:/
+
+	if (winPrefix.test(absPath)) {
+		absPath = absPath.slice('//?/C:'.length)
+	}
+
+	const srcDir = POSIX.dirname(srcFile)
+	const relPath = './' + POSIX.relative(srcDir, absPath)
+	return new FileImport(absPath, relPath)
 }
