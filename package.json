@@ -1,16 +1,32 @@
 {
-	"name": "svelte-auto-import",
-	"version": "0.1.0",
+	"author": "Paul Williams",
+	"name": "@paulio/svelte-auto-import",
+	"description": "Auto import Svelte components",
 	"type": "module",
+	"license": "MIT",
+	"version": "0.1.0",
+	"keywords": [
+		"svelte",
+		"auto"
+	],
+	"exports": {
+		".": "./src/index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/PaulioRandall/svelte-auto-import.git"
+	},
 	"scripts": {
 		"fmt": "prettier --log-level warn --write .",
 		"test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --passWithNoTests --testPathPatterns ./src/",
 		"audit": "npm run fmt && npm run test && cat ./ready-to-integrate.txt"
 	},
 	"devDependencies": {
-		"glob": "13.0.6",
 		"jest": "30.4.2",
-		"node-html-parser": "7.1.0",
 		"prettier": "3.8.4"
+	},
+	"dependencies": {
+		"glob": "13.0.6",
+		"node-html-parser": "7.1.0"
 	}
 }
