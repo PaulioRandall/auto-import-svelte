@@ -107,8 +107,8 @@ function createRelPath(srcFile, absPath) {
 
 function toGlobbedFileImport(srcFile, rootRelPath) {
 	// E.g. `//?/C:`
-	const winPrefix = /^\/\/\?\/[A-Z]:/	
-	
+	const winPrefix = /^\/\/\?\/[A-Z]:/
+
 	let absPath = posix(path.resolve(rootRelPath))
 	if (winPrefix.test(absPath)) {
 		absPath = absPath.slice('//?/C:'.length)
