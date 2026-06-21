@@ -5,7 +5,10 @@ function unorderedEquals(act, exp) {
 	expect(act).toEqual(expect.arrayContaining(exp))
 }
 
-const POSIX = path.posix
+function resolveToPosix(p) {
+	// Glob has issue with Windows '\' separator.
+	return path.resolve(p).replace(/\\/g, '/')
+}
 
 describe('listImportableFiles.js', () => {
 	test('Auto import same directory', () => {
@@ -19,11 +22,11 @@ describe('listImportableFiles.js', () => {
 
 		const absFilePaths = components.map((c) => c.absPath)
 		unorderedEquals(absFilePaths, [
-			POSIX.resolve('./src/testdata/Grid.svelte'),
-			POSIX.resolve('./src/testdata/GridCell.svelte'),
-			POSIX.resolve('./src/testdata/GridColumn.svelte'),
-			POSIX.resolve('./src/testdata/GridRow.svelte'),
-			POSIX.resolve('./src/testdata/NotSvelteFile.txt'),
+			resolveToPosix('./src/testdata/Grid.svelte'),
+			resolveToPosix('./src/testdata/GridCell.svelte'),
+			resolveToPosix('./src/testdata/GridColumn.svelte'),
+			resolveToPosix('./src/testdata/GridRow.svelte'),
+			resolveToPosix('./src/testdata/NotSvelteFile.txt'),
 		])
 
 		const relFilePaths = components.map((c) => c.relPath)
@@ -47,8 +50,8 @@ describe('listImportableFiles.js', () => {
 
 		const absFilePaths = components.map((c) => c.absPath)
 		unorderedEquals(absFilePaths, [
-			POSIX.resolve('./src/testdata/subdir/GridCellBorder.svelte'),
-			POSIX.resolve('./src/testdata/subdir/GridCellContent.svelte'),
+			resolveToPosix('./src/testdata/subdir/GridCellBorder.svelte'),
+			resolveToPosix('./src/testdata/subdir/GridCellContent.svelte'),
 		])
 
 		const relFilePaths = components.map((c) => c.relPath)
@@ -69,13 +72,13 @@ describe('listImportableFiles.js', () => {
 
 		const absFilePaths = components.map((c) => c.absPath)
 		unorderedEquals(absFilePaths, [
-			POSIX.resolve('./src/testdata/Grid.svelte'),
-			POSIX.resolve('./src/testdata/GridCell.svelte'),
-			POSIX.resolve('./src/testdata/GridColumn.svelte'),
-			POSIX.resolve('./src/testdata/GridRow.svelte'),
-			POSIX.resolve('./src/testdata/NotSvelteFile.txt'),
-			POSIX.resolve('./src/testdata/subdir/GridCellBorder.svelte'),
-			POSIX.resolve('./src/testdata/subdir/GridCellContent.svelte'),
+			resolveToPosix('./src/testdata/Grid.svelte'),
+			resolveToPosix('./src/testdata/GridCell.svelte'),
+			resolveToPosix('./src/testdata/GridColumn.svelte'),
+			resolveToPosix('./src/testdata/GridRow.svelte'),
+			resolveToPosix('./src/testdata/NotSvelteFile.txt'),
+			resolveToPosix('./src/testdata/subdir/GridCellBorder.svelte'),
+			resolveToPosix('./src/testdata/subdir/GridCellContent.svelte'),
 		])
 
 		const relFilePaths = components.map((c) => c.relPath)
@@ -101,8 +104,8 @@ describe('listImportableFiles.js', () => {
 
 		const absFilePaths = components.map((c) => c.absPath)
 		unorderedEquals(absFilePaths, [
-			POSIX.resolve('./src/lib/LibAlpha.svelte'),
-			POSIX.resolve('./src/lib/LibBeta.svelte'),
+			resolveToPosix('./src/lib/LibAlpha.svelte'),
+			resolveToPosix('./src/lib/LibBeta.svelte'),
 		])
 
 		const relFilePaths = components.map((c) => c.relPath)
@@ -112,7 +115,7 @@ describe('listImportableFiles.js', () => {
 		])
 	})
 
-	test('Auto import from lib', () => {
+	test('Auto import from root', () => {
 		const srcFile = './src/testdata/Grid.svelte'
 		const components = listImportableFiles(srcFile, {
 			path: './src/lib', //
@@ -123,8 +126,8 @@ describe('listImportableFiles.js', () => {
 
 		const absFilePaths = components.map((c) => c.absPath)
 		unorderedEquals(absFilePaths, [
-			POSIX.resolve('./src/lib/LibAlpha.svelte'),
-			POSIX.resolve('./src/lib/LibBeta.svelte'),
+			resolveToPosix('./src/lib/LibAlpha.svelte'),
+			resolveToPosix('./src/lib/LibBeta.svelte'),
 		])
 
 		const relFilePaths = components.map((c) => c.relPath)

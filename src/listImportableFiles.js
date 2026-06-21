@@ -2,8 +2,6 @@ import fs from 'fs'
 import { globSync } from 'glob'
 import path from 'path'
 
-const POSIX = path.posix
-
 class FileImport {
 	_absPath = ''
 	_relPath = ''
@@ -22,7 +20,7 @@ class FileImport {
 	}
 
 	get filename() {
-		return POSIX.basename(this._absPath)
+		return path.basename(this._absPath)
 	}
 
 	get name() {
@@ -30,7 +28,7 @@ class FileImport {
 	}
 
 	get extension() {
-		const ext = POSIX.extname(this._absPath)
+		const ext = path.extname(this._absPath)
 		return ext.replace('.', '')
 	}
 
@@ -40,7 +38,6 @@ class FileImport {
 }
 
 export default function (srcFile, autoImport) {
-	srcFile = POSIX.resolve(srcFile)
 	const absPath = resolveImportPath(srcFile, autoImport)
 
 	if (autoImport.isGlob) {
@@ -51,18 +48,17 @@ export default function (srcFile, autoImport) {
 }
 
 function resolveImportPath(srcFile, autoImport) {
-	// Relative and $lib imports only.
-	const path = autoImport.path
+	const p = autoImport.path
 
 	if (autoImport.isLib) {
-		const libDir = POSIX.resolve('./src/lib')
-		return POSIX.join(libDir, path)
+		const libDir = path.resolve('./src/lib')
+		return path.join(libDir, p)
 	} else if (autoImport.isRoot) {
-		const rootDir = POSIX.resolve('.')
-		return POSIX.join(rootDir, path)
+		const rootDir = path.resolve('.')
+		return path.join(rootDir, p)
 	} else {
-		const currDir = POSIX.dirname(srcFile)
-		return POSIX.join(currDir, path)
+		const currDir = path.dirname(srcFile)
+		return path.join(currDir, p)
 	}
 }
 
@@ -77,6 +73,8 @@ function listFilesInDir(srcFile, importDir) {
 }
 
 function listGlobFiles(srcFile, glob) {
+	glob = posix(glob)
+
 	return globSync(glob, {
 		posix: true, //
 		nodir: true,
@@ -93,29 +91,36 @@ function noSuchDirError(dir) {
 function toFileImport(srcFile, importDir, filename) {
 	const absPath = createAbsPath(importDir, filename)
 	const relPath = createRelPath(srcFile, absPath)
-	return new FileImport(absPath, relPath)
+	return new FileImport(posix(absPath), posix(relPath))
 }
 
 function createAbsPath(importDir, filename) {
-	const filepath = POSIX.join(importDir, filename)
-	return POSIX.resolve(filepath)
+	const filepath = path.join(importDir, filename)
+	return path.resolve(filepath)
 }
 
 function createRelPath(srcFile, absPath) {
-	const srcDir = POSIX.dirname(srcFile)
-	const relPath = POSIX.relative(srcDir, absPath)
-	return './' + POSIX.normalize(relPath)
+	const srcDir = path.dirname(srcFile)
+	const relPath = path.relative(srcDir, absPath)
+	return './' + path.normalize(relPath)
 }
 
-function toGlobbedFileImport(srcFile, absPath) {
+function toGlobbedFileImport(srcFile, rootRelPath) {
 	// E.g. `//?/C:`
-	const winPrefix = /^\/\/\?\/[A-Z]:/
-
+	const winPrefix = /^\/\/\?\/[A-Z]:/	
+	
+	let absPath = posix(path.resolve(rootRelPath))
 	if (winPrefix.test(absPath)) {
 		absPath = absPath.slice('//?/C:'.length)
 	}
 
-	const srcDir = POSIX.dirname(srcFile)
-	const relPath = './' + POSIX.relative(srcDir, absPath)
-	return new FileImport(absPath, relPath)
+	const srcDir = path.dirname(srcFile)
+	const relPath = './' + path.relative(srcDir, absPath)
+
+	return new FileImport(absPath, posix(relPath))
+}
+
+function posix(s) {
+	// Glob has issue with Windows '\' separator.
+	return s.replace(/\\/g, '/')
 }

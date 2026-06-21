@@ -20,7 +20,7 @@ export default function () {
 		// First, we must find and store the components actually
 		// used in the HTML.
 		markup: ({ content, filename }) => {
-			const srcFile = POSIX.resolve(filename)
+			const srcFile = path.resolve(filename)
 			componentLists[srcFile] = identifyUsedComponents(content)
 		},
 
@@ -28,7 +28,7 @@ export default function () {
 		// within the JS and replace them with real import
 		// statements for those used components.
 		script: ({ content, filename }) => {
-			const srcFile = POSIX.resolve(filename)
+			const srcFile = path.resolve(filename)
 			const components = componentLists[srcFile]
 
 			// Clean up, no need to keep the entry.
@@ -56,12 +56,16 @@ function parseAndReplace(srcFile, src, components) {
 
 	for (const autoImport of autoImports) {
 		// Identify importable componenets from path.
-		importables = listImportableComponents(srcFile, autoImport, components)
+		const importables = listImportableComponents(
+			srcFile,
+			autoImport,
+			components
+		)
 
 		// Generate import statements for components.
 		// Initial space indent for easse of reading when
 		// debugging.
-		statements = importables.map((im) => '  ' + im.importStatement)
+		const statements = importables.map((im) => '  ' + im.importStatement)
 
 		// Replace whole $autoImport line with import
 		// statements.
