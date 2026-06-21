@@ -60,11 +60,9 @@ function resolveImportPath(srcFile, autoImport) {
 }
 
 function listGlobFiles(srcFile, glob) {
-	return globSync(glob.path, {
-		posix: true, //
-		nodir: true,
-	}) //
-		.map((f) => toGlobbedFileImport(srcFile, f))
+	return globSync(glob.path, { nodir: true }).map((f) =>
+		toGlobbedFileImport(srcFile, f)
+	)
 }
 
 function toGlobbedFileImport(srcFile, rootRelPath) {
