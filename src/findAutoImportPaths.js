@@ -1,3 +1,6 @@
+const LIB_ALIAS = '$lib'
+const ROOT_ALIAS = '$root'
+
 const WHITESPACE = '[\\r\\t\\f\\v ]*'
 const PATH = '["\'`](?<path>.*?)["\'`]'
 
@@ -9,45 +12,88 @@ const globRegex = new RegExp(
 	`${WHITESPACE}\\$autoImportGlob\\(${PATH}\\);?${WHITESPACE}`
 )
 
+class AutoImport {
+	_path = ''
+	_lineIndex = 0
+	_isGlob = false
+	_isLib = false
+	_isRoot = false
+
+	constructor(path, lineIndex, isGlob) {
+		this._path = path
+		this._lineIndex = lineIndex
+		this._isGlob = isGlob
+		this._isLib = path.startsWith(LIB_ALIAS)
+		this._isRoot = path.startsWith(ROOT_ALIAS)
+	}
+
+	get path() {
+		if (this._isLib) {
+			return '.' + this._path.slice(LIB_ALIAS.length)
+		}
+
+		if (this._isRoot) {
+			return '.' + this._path.slice(ROOT_ALIAS.length)
+		}
+
+		return this._path
+	}
+
+	get lineIndex() {
+		return this._lineIndex
+	}
+
+	isGlob() {
+		return this._isGlob
+	}
+
+	isLib() {
+		return this._isLib
+	}
+
+	isRoot() {
+		return this._isRoot
+	}
+}
+
 export default function (lines) {
 	const results = []
 
 	for (let i = 0; i < lines.length; i++) {
-		const dirPath = findAutoImport(lines[i], i, dirRegex, false)
-		results.push(dirPath)
-
-		const globPath = findAutoImport(lines[i], i, globRegex, true)
-		results.push(globPath)
+		const ais = findAutoImports(lines[i], i)
+		results.push(...ais)
 	}
 
 	return results.filter(Boolean)
 }
 
+function findAutoImports(line, lineIndex) {
+	const dirPath = findAutoImport(
+		line,
+		lineIndex, //
+		dirRegex,
+		false //
+	)
+
+	const globPath = findAutoImport(
+		line,
+		lineIndex, //
+		globRegex,
+		true //
+	)
+
+	return [dirPath, globPath]
+}
+
 function findAutoImport(line, lineIndex, regex, isGlob) {
 	regex.lastIndex = 0
 
-	let path = findImportPath(line, regex)
+	const m = regex.exec(line)
+	const path = m ? m.groups.path : ''
 
 	if (!path) {
 		return null
 	}
 
-	const libAlias = '$lib'
-	const isLib = path.startsWith(libAlias)
-	if (isLib) {
-		path = '.' + path.slice(libAlias.length)
-	}
-
-	const rootAlias = '$root'
-	const isRoot = path.startsWith(rootAlias)
-	if (isRoot) {
-		path = '.' + path.slice(rootAlias.length)
-	}
-
-	return { isGlob, isLib, isRoot, path, lineIndex }
-}
-
-function findImportPath(line, regex) {
-	const m = regex.exec(line)
-	return m ? m.groups.path : ''
+	return new AutoImport(path, lineIndex, isGlob)
 }

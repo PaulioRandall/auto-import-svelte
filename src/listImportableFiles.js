@@ -1,26 +1,20 @@
 import fs from 'fs'
 import { globSync } from 'glob'
-import path from 'path'
+import PusedoPosixPath from './PusedoPosixPath'
 
 class FileImport {
-	_absPath = ''
-	_relPath = ''
+	_path = null
 
-	constructor(absPath, relPath) {
-		this._absPath = absPath
-		this._relPath = relPath
+	constructor(path) {
+		this._path = path
 	}
 
-	get absPath() {
-		return this._absPath
-	}
-
-	get relPath() {
-		return this._relPath
+	get path() {
+		return this._path.path
 	}
 
 	get filename() {
-		return path.basename(this._absPath)
+		return this._path.basename()
 	}
 
 	get name() {
@@ -28,19 +22,20 @@ class FileImport {
 	}
 
 	get extension() {
-		const ext = path.extname(this._absPath)
+		const ext = this._path.extname()
 		return ext.replace('.', '')
 	}
 
 	get importStatement() {
-		return `import ${this.name} from "${this.relPath}";`
+		return `import ${this.name} from "${this.path}";`
 	}
 }
 
 export default function (srcFile, autoImport) {
+	srcFile = new PusedoPosixPath(srcFile)
 	const absPath = resolveImportPath(srcFile, autoImport)
 
-	if (autoImport.isGlob) {
+	if (autoImport.isGlob()) {
 		return listGlobFiles(srcFile, absPath)
 	}
 
@@ -48,38 +43,44 @@ export default function (srcFile, autoImport) {
 }
 
 function resolveImportPath(srcFile, autoImport) {
-	const p = autoImport.path
+	const ppp = new PusedoPosixPath(autoImport.path)
 
-	if (autoImport.isLib) {
-		const libDir = path.resolve('./src/lib')
-		return path.join(libDir, p)
-	} else if (autoImport.isRoot) {
-		const rootDir = path.resolve('.')
-		return path.join(rootDir, p)
+	if (autoImport.isLib()) {
+		// $lib/blah
+		const libDir = PusedoPosixPath.resolve('./src/lib')
+		return PusedoPosixPath.join(libDir, ppp)
+	} else if (autoImport.isRoot()) {
+		// $root/blah
+		const rootDir = PusedoPosixPath.resolve('.')
+		return PusedoPosixPath.join(rootDir, ppp)
 	} else {
-		const currDir = path.dirname(srcFile)
-		return path.join(currDir, p)
+		// ./blah
+		return PusedoPosixPath.join(srcFile.dirname(), ppp)
 	}
-}
-
-function listFilesInDir(srcFile, importDir) {
-	if (!fs.existsSync(importDir)) {
-		noSuchDirError(importDir)
-	}
-
-	return fs
-		.readdirSync(importDir) //
-		.map((f) => toFileImport(srcFile, importDir, f))
 }
 
 function listGlobFiles(srcFile, glob) {
-	glob = posix(glob)
-
-	return globSync(glob, {
+	return globSync(glob.path, {
 		posix: true, //
 		nodir: true,
 	}) //
 		.map((f) => toGlobbedFileImport(srcFile, f))
+}
+
+function toGlobbedFileImport(srcFile, rootRelPath) {
+	const absPath = PusedoPosixPath.resolve(rootRelPath)
+	const relPath = srcFile.dirname().relative(absPath)
+	return new FileImport(relPath)
+}
+
+function listFilesInDir(srcFile, importDir) {
+	if (!fs.existsSync(importDir.original)) {
+		noSuchDirError(importDir.original)
+	}
+
+	return fs
+		.readdirSync(importDir.original) //
+		.map((f) => toFileImport(srcFile, importDir, f))
 }
 
 function noSuchDirError(dir) {
@@ -89,38 +90,10 @@ function noSuchDirError(dir) {
 }
 
 function toFileImport(srcFile, importDir, filename) {
-	const absPath = createAbsPath(importDir, filename)
-	const relPath = createRelPath(srcFile, absPath)
-	return new FileImport(posix(absPath), posix(relPath))
-}
-
-function createAbsPath(importDir, filename) {
-	const filepath = path.join(importDir, filename)
-	return path.resolve(filepath)
-}
-
-function createRelPath(srcFile, absPath) {
-	const srcDir = path.dirname(srcFile)
-	const relPath = path.relative(srcDir, absPath)
-	return './' + path.normalize(relPath)
-}
-
-function toGlobbedFileImport(srcFile, rootRelPath) {
-	// E.g. `//?/C:`
-	const winPrefix = /^\/\/\?\/[A-Z]:/
-
-	let absPath = posix(path.resolve(rootRelPath))
-	if (winPrefix.test(absPath)) {
-		absPath = absPath.slice('//?/C:'.length)
-	}
-
-	const srcDir = path.dirname(srcFile)
-	const relPath = './' + path.relative(srcDir, absPath)
-
-	return new FileImport(absPath, posix(relPath))
-}
-
-function posix(s) {
-	// Glob has issue with Windows '\' separator.
-	return s.replace(/\\/g, '/')
+	const absPath = importDir.append(filename)
+	const relPath = srcFile
+		.dirname() //
+		.relative(absPath)
+		.normalize()
+	return new FileImport(relPath)
 }

@@ -4,18 +4,33 @@ function toLines(s) {
 	return s.split('\n')
 }
 
+function expectAutoImports(ais, exps) {
+	for (let i = 0; i < ais.length; i++) {
+		const act = ais[i]
+		const exp = exps[i]
+
+		expect(act.path).toEqual(exp.path)
+		expect(act.lineIndex).toEqual(exp.lineIndex)
+		expect(act.isGlob()).toEqual(exp.isGlob)
+		expect(act.isLib()).toEqual(exp.isLib)
+		expect(act.isRoot()).toEqual(exp.isRoot)
+	}
+
+	expect(ais.length).toEqual(exps.length)
+}
+
 describe('parseAutoImports.js', () => {
 	test('Same directory', () => {
 		const lines = toLines(`$autoImportDir(".")`)
 		const autoImports = findAutoImportPaths(lines)
 
-		expect(autoImports).toEqual([
+		expectAutoImports(autoImports, [
 			{
-				isGlob: false, //
+				path: '.', //
+				lineIndex: 0,
+				isGlob: false,
 				isLib: false,
 				isRoot: false,
-				lineIndex: 0,
-				path: '.',
 			},
 		])
 	})
@@ -24,13 +39,13 @@ describe('parseAutoImports.js', () => {
 		const lines = toLines(`$autoImportDir("./sub")`)
 		const autoImports = findAutoImportPaths(lines)
 
-		expect(autoImports).toEqual([
+		expectAutoImports(autoImports, [
 			{
-				isGlob: false, //
+				path: './sub',
+				lineIndex: 0,
+				isGlob: false,
 				isLib: false,
 				isRoot: false,
-				lineIndex: 0,
-				path: './sub',
 			},
 		])
 	})
@@ -44,20 +59,20 @@ describe('parseAutoImports.js', () => {
 
 		const autoImports = findAutoImportPaths(lines)
 
-		expect(autoImports).toEqual([
+		expectAutoImports(autoImports, [
 			{
-				isGlob: false, //
+				path: '.', //
+				lineIndex: 2,
+				isGlob: false,
 				isLib: false,
 				isRoot: false,
-				lineIndex: 2,
-				path: '.',
 			},
 			{
-				isGlob: false, //
+				path: './sub', //
+				lineIndex: 3,
+				isGlob: false,
 				isLib: false,
 				isRoot: false,
-				lineIndex: 3,
-				path: './sub',
 			},
 		])
 	})
@@ -75,13 +90,13 @@ describe('parseAutoImports.js', () => {
 
 		const autoImports = findAutoImportPaths(lines)
 
-		expect(autoImports).toEqual([
+		expectAutoImports(autoImports, [
 			{
-				isGlob: true, //
+				path: './**/*', //
+				lineIndex: 2,
+				isGlob: true,
 				isLib: false,
 				isRoot: false,
-				lineIndex: 2,
-				path: './**/*',
 			},
 		])
 	})
@@ -92,13 +107,13 @@ describe('parseAutoImports.js', () => {
 
 		const autoImports = findAutoImportPaths(lines)
 
-		expect(autoImports).toEqual([
+		expectAutoImports(autoImports, [
 			{
-				isGlob: false, //
+				path: '.', //
+				lineIndex: 0,
+				isGlob: false,
 				isLib: true,
 				isRoot: false,
-				lineIndex: 0,
-				path: '.',
 			},
 		])
 	})
@@ -109,13 +124,13 @@ describe('parseAutoImports.js', () => {
 
 		const autoImports = findAutoImportPaths(lines)
 
-		expect(autoImports).toEqual([
+		expectAutoImports(autoImports, [
 			{
-				isGlob: false, //
+				path: './src', //
+				lineIndex: 0,
+				isGlob: false,
 				isLib: false,
 				isRoot: true,
-				lineIndex: 0,
-				path: './src',
 			},
 		])
 	})

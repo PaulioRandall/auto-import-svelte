@@ -1,7 +1,5 @@
-import path from 'path'
+import nodePath from 'path'
 import preprocessor from './index.js'
-
-const POSIX = path.posix
 
 function joinLines(...lines) {
 	return lines.join('\n')
@@ -9,7 +7,7 @@ function joinLines(...lines) {
 
 describe('index.js', () => {
 	test('index', () => {
-		const filename = POSIX.resolve('./src/testdata/Grid.svelte')
+		const filename = nodePath.resolve('./src/testdata/Grid.svelte')
 		const pp = preprocessor()
 
 		pp.markup({
@@ -51,7 +49,7 @@ describe('index.js', () => {
 	})
 
 	test('index (glob)', () => {
-		const filename = POSIX.resolve('./src/testdata/Grid.svelte')
+		const filename = nodePath.resolve('./src/testdata/Grid.svelte')
 		const pp = preprocessor()
 
 		pp.markup({
@@ -90,7 +88,7 @@ describe('index.js', () => {
 	})
 
 	test('index (lib)', () => {
-		const filename = POSIX.resolve('./src/testdata/Grid.svelte')
+		const filename = nodePath.resolve('./src/testdata/Grid.svelte')
 		const pp = preprocessor()
 
 		pp.markup({
@@ -112,15 +110,15 @@ describe('index.js', () => {
 		// Ordered first by auto import path then alphabetical
 		// by name.
 		const exp = joinLines(
-			`  import LibAlpha from "./../lib/LibAlpha.svelte";`,
-			`  import LibBeta from "./../lib/LibBeta.svelte";`
+			`  import LibAlpha from "../lib/LibAlpha.svelte";`,
+			`  import LibBeta from "../lib/LibBeta.svelte";`
 		)
 
 		expect(code).toEqual(exp)
 	})
 
 	test('index (root)', () => {
-		const filename = POSIX.resolve('./src/testdata/Grid.svelte')
+		const filename = nodePath.resolve('./src/testdata/Grid.svelte')
 		const pp = preprocessor()
 
 		pp.markup({
@@ -142,8 +140,8 @@ describe('index.js', () => {
 		// Ordered first by auto import path then alphabetical
 		// by name.
 		const exp = joinLines(
-			`  import LibAlpha from "./../lib/LibAlpha.svelte";`,
-			`  import LibBeta from "./../lib/LibBeta.svelte";`
+			`  import LibAlpha from "../lib/LibAlpha.svelte";`,
+			`  import LibBeta from "../lib/LibBeta.svelte";`
 		)
 
 		expect(code).toEqual(exp)

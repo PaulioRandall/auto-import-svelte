@@ -1,11 +1,10 @@
 import path from 'path'
 import fs from 'fs'
 
+import PusedoPosixPath from './PusedoPosixPath'
 import identifyUsedComponents from './identifyUsedComponents.js'
 import listImportableFiles from './listImportableFiles.js'
 import findAutoImportPaths from './findAutoImportPaths.js'
-
-const POSIX = path.posix
 
 export default function () {
 	// This object is populated by the markup preprocesssor
@@ -20,19 +19,19 @@ export default function () {
 		// First, we must find and store the components actually
 		// used in the HTML.
 		markup: ({ content, filename }) => {
-			const srcFile = path.resolve(filename)
-			componentLists[srcFile] = identifyUsedComponents(content)
+			const srcFile = PusedoPosixPath.resolve(filename)
+			componentLists[srcFile.path] = identifyUsedComponents(content)
 		},
 
 		// Second, we must find the $autoImport statements
 		// within the JS and replace them with real import
 		// statements for those used components.
 		script: ({ content, filename }) => {
-			const srcFile = path.resolve(filename)
-			const components = componentLists[srcFile]
+			const srcFile = PusedoPosixPath.resolve(filename)
+			const components = componentLists[srcFile.path]
 
 			// Clean up, no need to keep the entry.
-			delete componentLists[srcFile]
+			delete componentLists[srcFile.path]
 
 			content = parseAndReplace(
 				srcFile, //
@@ -54,11 +53,11 @@ function parseAndReplace(srcFile, src, components) {
 	// affect line indexes before them.
 	autoImports.reverse()
 
-	for (const autoImport of autoImports) {
+	for (const ai of autoImports) {
 		// Identify importable componenets from path.
 		const importables = listImportableComponents(
-			srcFile,
-			autoImport,
+			srcFile, //
+			ai,
 			components
 		)
 
@@ -69,7 +68,7 @@ function parseAndReplace(srcFile, src, components) {
 
 		// Replace whole $autoImport line with import
 		// statements.
-		lines.splice(autoImport.lineIndex, 1, ...statements)
+		lines.splice(ai.lineIndex, 1, ...statements)
 	}
 
 	return lines.join('\n')
@@ -79,15 +78,12 @@ function listImportableComponents(srcFile, autoImportPath, components) {
 	return (
 		listImportableFiles(srcFile, autoImportPath)
 			// Must be a Svelte file.
-			.filter((fi) => fi.extension === 'svelte')
-
-			// Exclude the file being preprocessed.
-			.filter((fi) => fi.absPath !== POSIX.resolve(srcFile))
+			.filter((f) => f.extension === 'svelte')
 
 			// Must be a properly named Svelte component.
-			.filter((fi) => /^[A-Z][A-Za-z0-9_]*$/.test(fi.name))
+			.filter((f) => /^[A-Z][A-Za-z0-9_]*$/.test(f.name))
 
 			// Exclude those not used in the markup.
-			.filter((fi) => components.includes(fi.name))
+			.filter((f) => components.includes(f.name))
 	)
 }
