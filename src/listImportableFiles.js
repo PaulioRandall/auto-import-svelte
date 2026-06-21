@@ -49,14 +49,16 @@ function resolveImportPath(srcFile, autoImport) {
 		// $lib/blah
 		const libDir = PusedoPosixPath.resolve('./src/lib')
 		return PusedoPosixPath.join(libDir, ppp)
-	} else if (autoImport.isRoot()) {
+	}
+
+	if (autoImport.isRoot()) {
 		// $root/blah
 		const rootDir = PusedoPosixPath.resolve('.')
 		return PusedoPosixPath.join(rootDir, ppp)
-	} else {
-		// ./blah
-		return PusedoPosixPath.join(srcFile.dirname(), ppp)
 	}
+
+	// ./blah
+	return PusedoPosixPath.join(srcFile.dirname(), ppp)
 }
 
 function listGlobFiles(srcFile, glob) {
