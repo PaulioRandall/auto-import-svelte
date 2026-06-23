@@ -3,6 +3,9 @@
 	"name": "@paulio/auto-import-svelte",
 	"description": "Auto import Svelte components",
 	"type": "module",
+	"engines": {
+		"node": ">=24"
+	},
 	"license": "MIT",
 	"version": "0.1.1",
 	"keywords": [
