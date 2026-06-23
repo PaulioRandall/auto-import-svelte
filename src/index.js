@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs'
 
-import PusedoPosixPath from './PusedoPosixPath'
+import PusedoPosixPath from './PusedoPosixPath.js'
 import identifyUsedComponents from './identifyUsedComponents.js'
 import listImportableFiles from './listImportableFiles.js'
 import findAutoImportPaths from './findAutoImportPaths.js'

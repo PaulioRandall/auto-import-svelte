@@ -1,7 +1,5 @@
-import path from 'path'
+import nodePath from 'path'
 import identifyUsedComponents from './identifyUsedComponents.js'
-
-const POSIX = path.posix
 
 const html = `
 	<div>
@@ -14,7 +12,7 @@ const html = `
 
 describe('identifyUsedComponents.js', () => {
 	test('Identifies correct components', () => {
-		const filename = POSIX.resolve('./src/testdata/Grid.svelte')
+		const filename = nodePath.resolve('./src/testdata/Grid.svelte')
 		const components = identifyUsedComponents(html)
 		expect(components).toEqual(['Grid', 'GridCell'])
 	})

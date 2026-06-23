@@ -1,5 +1,5 @@
 import nodePath from 'path'
-import PusedoPosixPath from './PusedoPosixPath'
+import PusedoPosixPath from './PusedoPosixPath.js'
 
 const win32 = nodePath.win32
 const posix = nodePath.posix
@@ -42,11 +42,5 @@ describe('PusedoPosixPath.js', () => {
 
 		expect(act.original).toEqual('..\\bob')
 		expect(act.path).toEqual('../bob')
-	})
-
-	test('driveless', () => {
-		const alice = new PusedoPosixPath('C:\\user\\home\\alice')
-		const act1 = alice.driveless(alice)
-		expect(act1).toEqual('/user/home/alice')
 	})
 })

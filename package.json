@@ -9,6 +9,7 @@
 		"svelte",
 		"auto"
 	],
+	"main": "src/index.js",
 	"exports": {
 		".": "./src/index.js"
 	},

@@ -10,9 +10,6 @@ import nodePath from 'path'
 //
 // All functions that accept path arguments may accept them
 // as either a string or a PusedoPosixPath.
-//
-// All functions that return a path will return a new
-// PusedoPosixPath except for 'driveless'.
 export default class PusedoPosixPath {
 	// For testing.
 	static _lib = nodePath
@@ -83,19 +80,6 @@ export default class PusedoPosixPath {
 
 	extname() {
 		return PusedoPosixPath._lib.extname(this._original)
-	}
-
-	// driveless returns the path as a string removing any
-	// prefixed Window's drive letter.
-	driveless() {
-		const p = this._path
-
-		if (/^[A-Z]:/.test(p)) {
-			// e.g. "C:"
-			return p.slice('_:'.length)
-		}
-
-		return p
 	}
 }
 

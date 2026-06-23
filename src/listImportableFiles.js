@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { globSync } from 'glob'
-import PusedoPosixPath from './PusedoPosixPath'
+import PusedoPosixPath from './PusedoPosixPath.js'
 
 class FileImport {
 	_path = null
