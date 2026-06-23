@@ -1,5 +1,5 @@
 <script>
-	$autoImportGlob('./**')
+	$autoImportGlob('./**/*')
 </script>
 
 <Alpha>

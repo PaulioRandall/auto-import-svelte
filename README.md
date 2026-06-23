@@ -1,4 +1,4 @@
-# Svelte Auto-Import
+# Auto-Import Svelte Components
 
 ```svelte
 <script>
@@ -34,7 +34,7 @@ Very simple and lazy implementation:
 
 ```js
 "devDependencies": {
-	"@PaulioRandall/svelte-auto-import": "x.y.z"
+	"@PaulioRandall/auto-import-svelte": "0.1.0"
 }
 ```
 
@@ -42,10 +42,10 @@ Very simple and lazy implementation:
 
 ```svelte
 // svelte.config.js
-import svelteAutoImport from 'svelte-auto-import'
+import autoImportSvelte from 'auto-import-svelte'
 
 export default {
-	preprocess: [svelteAutoImport()],
+	preprocess: [autoImportSvelte()],
 }
 ```
 
@@ -64,13 +64,13 @@ Auto import paths are relative to the components parent directory, `$lib` (`./sr
 	// Will import SiblingDirectoryComponent.
 	$autoImportDir('../sibling-directory')
 
+	// Will import components from `{project-root}/src/shared`.
+	$autoImportDir("$root/src/shared")
+
 	// Will import all components from `$lib`.
 	//
 	// See https://www.npmjs.com/package/glob for more info.
 	$autoImportGlob("$lib/**/*")
-
-	// Will import components from `{project-root}/src/shared`.
-	$autoImportDir("$root/src/shared")
 </script>
 
 <SameDirectoryComponent />

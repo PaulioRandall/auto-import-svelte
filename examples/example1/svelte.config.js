@@ -1,5 +1,5 @@
-import svelteAutoImport from 'svelte-auto-import'
+import autoImportSvelte from 'auto-import-svelte'
 
 export default {
-	preprocess: [svelteAutoImport()],
+	preprocess: [autoImportSvelte()],
 }
