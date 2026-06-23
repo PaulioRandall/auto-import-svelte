@@ -4,12 +4,11 @@
 	"description": "Auto import Svelte components",
 	"type": "module",
 	"license": "MIT",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"keywords": [
 		"svelte",
 		"auto"
 	],
-	"main": "src/index.js",
 	"exports": {
 		".": "./src/index.js"
 	},
