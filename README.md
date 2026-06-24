@@ -1,5 +1,10 @@
 # Auto-Import Svelte Components
 
+Simple Svelte preprocessor for auto importing sets of
+components.
+
+This library is a scaffolding tool to minimise boiler plate as a source of programming friction during development. `$autoImport` statements can be replaced with explicit imports towards the end of development.
+
 ```svelte
 <script>
 	// Specific directory import.
@@ -16,102 +21,88 @@
 </script>
 ```
 
-Simple Svelte preprocessor for auto importing sets of
-components. Inspired by languages such as [Go](https://go.dev/) where packaged scoped values are referencable across files without importing. I've expanded to allow importing of Svelte components from specific folders and via Glob.
-
-This library is a scaffolding tool to minimise boiler plate as a source of programming friction during development activities. `$autoImport` statements can be replaced with explicit imports towards the end of development.
-
 Very simple and lazy implementation:
 
-- It will only import components used within the HTML section of the Svelte component; it won't import dynamically instantiated components.
-- It won't check if a component is already imported.
-- It doesn't work for library imports or absolute paths.
+- It will only import components used within the HTML section of Svelte components, i.e. not those created dynamically.
+- It won't check if a component is already imported, thus, will cause a compile error if imported manually.
+- It doesn't work for library imports or absolute paths, relatively referenceable components only.
 - Auto import statements must be on a single line and the path must be a single or double quoted string literal.
 
 ## Good Usage
 
 **package.json**
 
-```js
+```json
 "devDependencies": {
-	"@paulio/auto-import-svelte": "0.1.0"
+	"@paulio/auto-import-svelte": "0.1.1"
 }
 ```
 
 **svelte.config.js**
 
 ```svelte
-// svelte.config.js
-import autoImportSvelte from 'auto-import-svelte'
+<script>
+	// svelte.config.js
+	import autoImportSvelte from 'auto-import-svelte'
 
-export default {
-	preprocess: [autoImportSvelte()],
-}
+	export default {
+		preprocess: [autoImportSvelte()],
+	}
+</script>
 ```
 
 **Parent Component**
 
-Auto import paths are relative to the components parent directory, `$lib` (`./src/lib`), or `$root` (project root):
+Auto import paths may be relative to either:
+
+- `./`: The importing component's parent directory.
+- `$lib/`: used in SvelteKit to reference `./src/lib`.
+- `$root/`: the project's root directory.
 
 ```svelte
 <script>
-	// Will import SameDirectoryComponent.
+	// Import all used components from this component's
+	// parent directory.
 	$autoImportDir('.')
 
-	// Will import SubDirectoryComponent.
-	$autoImportDir('./sub-directory')
+	// From a sub directory.
+	$autoImportDir('./sub-folder')
 
-	// Will import SiblingDirectoryComponent.
+	// From a sibling directory.
 	$autoImportDir('../sibling-directory')
 
-	// Will import components from `{project-root}/src/shared`.
-	$autoImportDir("$root/src/shared")
+	// From `{root}/src/lib/components`.
+	$autoImportDir("$lib/components")
 
-	// Will import all components from `$lib`.
+	// From `{root}/pkg`.
+	$autoImportDir("$root/pkg")
+
+	// Import all used components from `{root}/src/lib` and
+	// its sub directories.
 	//
 	// See https://www.npmjs.com/package/glob for more info.
 	$autoImportGlob("$lib/**/*")
 </script>
-
-<SameDirectoryComponent />
-<SubDirectoryComponent />
-<SiblingDirectoryComponent />
-<LibSubDirectoryComponent />
 ```
 
 ## Bad Usage
 
-Existing imports for auto import paths must be removed
-or face a naming conflict on compile:
-
 ```svelte
 <script>
-	import Component from './Component'
 
-	// Will create a duplicate and conflicting import for
-	// Component.
+	// Manual imports for auto imported paths must be removed
+	// or face a conflicting import errors.
+	import Component from './Component.svelte'
 	$autoImportDir('.')
-</script>
-```
 
-It doesn't work for library imports or absolute paths, so
-you can't do this:
-
-```svelte
-<script>
-	// Library import.
+	// Not allowed library imports.
 	$autoImportDir('flowbite-svelte')
 
-	// Absolute path.
+	// Not allowed absolute path.
 	$autoImportDir('/absolute/path/to/dir')
-</script>
-```
 
-The whole auto import statement must be on a single line, never
-multiline:
-
-```svelte
-<script>
+	// Multiline auto imports not allowed. Sorry, just CBA
+	// to do proper parsing.
 	$autoImportDir(
 		'.',
 	)
