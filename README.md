@@ -51,13 +51,13 @@ Very simple and lazy implementation:
 </script>
 ```
 
-**Parent Component**
+**Component.svelte**
 
 Auto import paths may be relative to either:
 
-- `./`: The importing component's parent directory.
-- `$lib/`: used in SvelteKit to reference `./src/lib`.
-- `$root/`: the project's root directory.
+- `./`, `../blah`, etc: The importing component's parent directory.
+- `$lib/`: referencing `./src/lib` (SvelteKit).
+- `$root/`: referencing the project's root directory.
 
 ```svelte
 <script>
@@ -89,9 +89,8 @@ Auto import paths may be relative to either:
 
 ```svelte
 <script>
-
-	// Manual imports for auto imported paths must be removed
-	// or face a conflicting import errors.
+	// Manual imports must be removed or face a conflicting
+	// import error.
 	import Component from './Component.svelte'
 	$autoImportDir('.')
 
@@ -101,10 +100,11 @@ Auto import paths may be relative to either:
 	// Not allowed absolute path.
 	$autoImportDir('/absolute/path/to/dir')
 
-	// Multiline auto imports not allowed. Sorry, just CBA
-	// to do proper parsing.
+	// Multiline auto imports not allowed.
 	$autoImportDir(
 		'.',
 	)
 </script>
 ```
+
+> Sorry, just CBA to do proper parsing for this project. However, the limitations haven't been an issue given my development style.
