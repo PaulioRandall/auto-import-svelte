@@ -34,7 +34,7 @@ Very simple and lazy implementation:
 
 ```js
 "devDependencies": {
-	"@PaulioRandall/auto-import-svelte": "0.1.0"
+	"@paulio/auto-import-svelte": "0.1.0"
 }
 ```
 
