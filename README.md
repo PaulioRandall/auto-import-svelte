@@ -1,9 +1,13 @@
-# Auto-Import Svelte Components
+![Made to be Plundered](https://img.shields.io/badge/Made%20to%20be%20Plundered-royalblue)
+[![Latest version](https://img.shields.io/github/v/release/PaulioRandall/p72-auto-import-svelte)](https://github.com/PaulioRandall/p72-auto-import-svelte/releases)
+[![Release date](https://img.shields.io/github/release-date/PaulioRandall/p72-auto-import-svelte)](https://github.com/PaulioRandall/p72-auto-import-svelte/releases)
+
+# P72: Auto-Import Svelte
 
 Simple Svelte preprocessor for auto importing sets of
 components.
 
-This library is a scaffolding tool to minimise boiler plate as a source of programming friction during development. `$autoImport` statements can be replaced with explicit imports towards the end of development.
+This library is a scaffolding tool to minimise boiler plate as a source of programming friction during development. `$autoImport` statements can be replaced with explicit imports at any time.
 
 ```svelte
 <script>
@@ -34,7 +38,7 @@ Very simple and lazy implementation:
 
 ```json
 "devDependencies": {
-	"@paulio/auto-import-svelte": "0.1.1"
+	"@paulio/auto-import-svelte": "0.1.2"
 }
 ```
 
