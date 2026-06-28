@@ -1,3 +1,0 @@
-<p>
-	Charlie component. 
-</p>

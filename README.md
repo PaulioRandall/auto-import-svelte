@@ -37,8 +37,10 @@ Very simple and lazy implementation:
 **package.json**
 
 ```json
-"devDependencies": {
-	"@paulio/auto-import-svelte": "0.1.2"
+{
+	"devDependencies": {
+		"@paulio/auto-import-svelte": "0.1.2"
+	}
 }
 ```
 
@@ -112,3 +114,7 @@ Auto import paths may be relative to either:
 ```
 
 > Sorry, just CBA to do proper parsing for this project. However, the limitations haven't been an issue given my development style.
+
+## Made to be Plundered
+
+Alternatively, _Copy & paste_ files from _[/src](./src)_ into your project. Tests are written in [Jest](https://jestjs.io/) but should be easy to adapt or rewrite for whatever testing framework.
